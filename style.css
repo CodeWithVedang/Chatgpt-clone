@@ -1,13 +1,23 @@
+:root {
+  --background: #343541;
+  --header: #202123;
+  --user: #2d88ff;
+  --bot: #444654;
+  --input-bg: #40414f;
+  --accent: #10a37f;
+  --font: "Segoe UI", "Helvetica Neue", sans-serif;
+}
+
 * {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
-  font-family: Arial, sans-serif;
+  font-family: var(--font);
 }
 
 body {
-  background-color: #343541;
-  color: #ececec;
+  background-color: var(--background);
+  color: #fff;
   height: 100vh;
   display: flex;
   justify-content: center;
@@ -15,24 +25,24 @@ body {
 }
 
 .container {
-  background-color: #444654;
   width: 100%;
-  max-width: 600px;
+  max-width: 700px;
   height: 90vh;
   display: flex;
   flex-direction: column;
-  border-radius: 8px;
+  background-color: var(--bot);
+  border-radius: 10px;
   overflow: hidden;
-  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+  box-shadow: 0 0 15px rgba(0,0,0,0.4);
 }
 
 header {
-  background-color: #202123;
-  padding: 16px;
-  font-size: 1.2rem;
+  background-color: var(--header);
   text-align: center;
+  padding: 1rem;
+  font-size: 1.3rem;
   font-weight: bold;
-  color: #fff;
+  border-bottom: 1px solid #333;
 }
 
 #chat-container {
@@ -45,42 +55,47 @@ header {
 }
 
 .message {
-  padding: 10px;
-  border-radius: 6px;
-  max-width: 90%;
-  line-height: 1.4;
+  padding: 12px 14px;
+  border-radius: 8px;
+  max-width: 80%;
   white-space: pre-wrap;
+  line-height: 1.5;
+  word-wrap: break-word;
 }
 
 .user {
   align-self: flex-end;
-  background-color: #2d88ff;
+  background-color: var(--user);
   color: #fff;
 }
 
 .bot {
   align-self: flex-start;
-  background-color: #3c3f51;
+  background-color: #3e3f4b;
+  color: #eee;
 }
 
 #chat-form {
   display: flex;
-  padding: 10px;
-  background-color: #40414f;
   gap: 10px;
+  padding: 12px;
+  background-color: var(--input-bg);
 }
 
 #user-input {
   flex: 1;
-  padding: 10px;
-  border-radius: 6px;
-  border: none;
+  padding: 10px 14px;
   font-size: 1rem;
+  border-radius: 8px;
+  border: none;
   resize: none;
+  outline: none;
+  background-color: #555;
+  color: white;
 }
 
 #chat-form button {
-  background-color: #10a37f;
+  background-color: var(--accent);
   color: white;
   border: none;
   padding: 0 20px;
@@ -95,7 +110,15 @@ header {
 
 @media (max-width: 600px) {
   .container {
-    height: 100vh;
     border-radius: 0;
+    height: 100vh;
+  }
+
+  #chat-form {
+    padding: 8px;
+  }
+
+  #user-input {
+    font-size: 0.9rem;
   }
 }
