@@ -19,24 +19,20 @@ chatForm.addEventListener("submit", async (e) => {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${API_KEY}`,
-        "HTTP-Referer": "https://yourdomain.com",  // <-- Change if needed
-        "X-Title": "ChatGPT Clone",                // <-- Change if needed
+        "HTTP-Referer": "https://yourdomain.com",  // Optional
+        "X-Title": "ChatGPT Clone",                // Optional
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: "deepseek/deepseek-r1-0528:free",   // Try changing this if needed
+        model: "deepseek/deepseek-r1-0528:free",
         messages: [
-          {
-            role: "user",
-            content: message
-          }
+          { role: "user", content: message }
         ]
       })
     });
 
     const data = await response.json();
 
-    // Handle errors from OpenRouter
     if (!response.ok || data.error) {
       const errorMsg = data.error?.message || "Unknown error from OpenRouter.";
       replaceElementText(loadingMsg, `⚠️ Error: ${errorMsg}`);
