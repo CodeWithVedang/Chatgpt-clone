@@ -3,6 +3,10 @@ const chatForm = document.getElementById("chat-form");
 const chatContainer = document.getElementById("chat-container");
 const userInput = document.getElementById("user-input");
 
+window.addEventListener("load", () => {
+  appendMessage("bot", "👋 Hello! How can I help you today?");
+});
+
 chatForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   const message = userInput.value.trim();
@@ -19,13 +23,14 @@ chatForm.addEventListener("submit", async (e) => {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${API_KEY}`,
-        "HTTP-Referer": "https://yourdomain.com",  // Optional
-        "X-Title": "ChatGPT Clone",                // Optional
+        "HTTP-Referer": "https://yourdomain.com", // Optional
+        "X-Title": "ChatGPT Clone",
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
         model: "deepseek/deepseek-r1-0528:free",
         messages: [
+          { role: "system", content: "You are a helpful assistant. Always respond in English." },
           { role: "user", content: message }
         ]
       })
