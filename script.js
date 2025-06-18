@@ -12,19 +12,19 @@ chatForm.addEventListener("submit", async (e) => {
   userInput.value = "";
   userInput.focus();
 
-  appendMessage("bot", "Typing...");
+  const loadingMsg = appendMessage("bot", "Typing...");
 
   try {
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${API_KEY}`,
-        "HTTP-Referer": "https://yourdomain.com",
-        "X-Title": "ChatGPT Clone",
+        "HTTP-Referer": "https://yourdomain.com",  // <-- Change if needed
+        "X-Title": "ChatGPT Clone",                // <-- Change if needed
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: "deepseek/deepseek-r1-0528:free",
+        model: "deepseek/deepseek-r1-0528:free",   // Try changing this if needed
         messages: [
           {
             role: "user",
@@ -35,12 +35,17 @@ chatForm.addEventListener("submit", async (e) => {
     });
 
     const data = await response.json();
-    const reply = data.choices?.[0]?.message?.content || "Sorry, I couldn't respond.";
-    
-    replaceLastBotMessage(reply);
+
+    // Handle errors from OpenRouter
+    if (!response.ok || data.error) {
+      const errorMsg = data.error?.message || "Unknown error from OpenRouter.";
+      replaceElementText(loadingMsg, `⚠️ Error: ${errorMsg}`);
+    } else {
+      const reply = data.choices?.[0]?.message?.content?.trim() || "⚠️ Empty response.";
+      replaceElementText(loadingMsg, reply);
+    }
   } catch (err) {
-    console.error(err);
-    replaceLastBotMessage("Error fetching response.");
+    replaceElementText(loadingMsg, `⚠️ Network Error: ${err.message}`);
   }
 });
 
@@ -50,11 +55,12 @@ function appendMessage(role, text) {
   div.innerText = text;
   chatContainer.appendChild(div);
   chatContainer.scrollTop = chatContainer.scrollHeight;
+  return div;
 }
 
-function replaceLastBotMessage(newText) {
-  const messages = document.querySelectorAll(".message.bot");
-  const lastBotMsg = messages[messages.length - 1];
-  if (lastBotMsg) lastBotMsg.innerText = newText;
-  chatContainer.scrollTop = chatContainer.scrollHeight;
-          }
+function replaceElementText(element, newText) {
+  if (element) {
+    element.innerText = newText;
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+  }
+}
