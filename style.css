@@ -46,7 +46,6 @@ body.light {
 
 .app-container {
   display: flex;
-  flex-direction: row;
   width: 100%;
   max-width: 1200px;
   height: 100vh;
@@ -56,31 +55,23 @@ body.light {
   box-shadow: var(--shadow);
 }
 
-body:not(.open-sidebar) .app-container {
-  flex-direction: column;
-}
-
 /* Sidebar */
 .sidebar {
   width: 250px;
   background-color: var(--header);
   display: flex;
   flex-direction: column;
-  transition: width 0.3s ease, opacity 0.3s ease;
+  transition: transform 0.3s ease;
+  position: absolute;
+  top: 0;
+  left: 0;
   height: 100%;
-  flex-shrink: 0;
+  transform: translateX(-100%);
+  z-index: 10;
 }
 
-body.open-sidebar .sidebar {
-  opacity: 1;
-  visibility: visible;
-  width: 250px;
-}
-
-body:not(.open-sidebar) .sidebar {
-  width: 0;
-  opacity: 0;
-  visibility: hidden;
+.sidebar.open {
+  transform: translateX(0);
 }
 
 body.light .sidebar {
@@ -166,7 +157,6 @@ body.light #chat-history li {
   display: flex;
   flex-direction: column;
   background-color: var(--background);
-  height: 100%;
 }
 
 body.light .chat-container {
@@ -180,7 +170,6 @@ header {
   padding: 1rem;
   background-color: var(--header);
   border-bottom: 1px solid var(--border);
-  flex-shrink: 0;
 }
 
 body.light header {
@@ -236,6 +225,14 @@ body.light .new-chat {
   gap: 1rem;
 }
 
+body.open-sidebar .chat-container {
+  margin-left: 250px;
+}
+
+body.light.open-sidebar .chat-container {
+  margin-left: 250px;
+}
+
 .message {
   padding: 0.75rem 1rem;
   border-radius: 12px;
@@ -273,7 +270,6 @@ body.light .message.bot {
   background-color: var(--input-bg);
   position: sticky;
   bottom: 0;
-  z-index: 1;
 }
 
 body.light #chat-form {
@@ -338,20 +334,7 @@ body.light #user-input {
 
   .chat-container {
     width: 100%;
-  }
-
-  .sidebar {
-    width: 100%;
-  }
-
-  body.open-sidebar .sidebar {
-    width: 100%;
-  }
-
-  body:not(.open-sidebar) .sidebar {
-    width: 0;
-    opacity: 0;
-    visibility: hidden;
+    margin-left: 0 !important;
   }
 
   .message {
