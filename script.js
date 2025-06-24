@@ -8,7 +8,6 @@ const sidebarOpen = document.getElementById("sidebar-open");
 const themeToggle = document.getElementById("theme-toggle");
 const historySearch = document.getElementById("history-search");
 const chatHistory = document.getElementById("chat-history");
-const newChatButton = document.getElementById("new-chat");
 
 // Initialize current session and load chat history
 let currentSession = [];
@@ -22,20 +21,14 @@ window.addEventListener("load", () => {
 // Save current session to chat history on page unload
 window.addEventListener("beforeunload", () => {
   if (currentSession.length > 0) {
-    saveCurrentSession();
+    const session = {
+      id: Date.now().toString(),
+      timestamp: new Date().toISOString(),
+      messages: currentSession,
+    };
+    chatHistoryData.push(session);
+    localStorage.setItem("chatHistory", JSON.stringify(chatHistoryData));
   }
-});
-
-// New Chat button handler
-newChatButton.addEventListener("click", () => {
-  if (currentSession.length > 0) {
-    saveCurrentSession();
-  }
-  currentSession = [];
-  chatContainer.innerHTML = "";
-  appendMessage("bot", "👋 Hello! How can I help you today?");
-  userInput.value = "";
-  userInput.focus();
 });
 
 // Chat response logic (as provided)
@@ -98,25 +91,13 @@ function addToCurrentSession(role, text) {
   currentSession.push({ role, text, timestamp: new Date().toISOString() });
 }
 
-// Save current session to chat history
-function saveCurrentSession() {
-  const session = {
-    id: Date.now().toString(),
-    timestamp: new Date().toISOString(),
-    messages: currentSession,
-  };
-  chatHistoryData.push(session);
-  localStorage.setItem("chatHistory", JSON.stringify(chatHistoryData));
-  renderChatHistory();
-}
-
 // Sidebar toggle
 sidebarToggle.addEventListener("click", () => {
-  document.body.classList.remove("open-sidebar");
+  sidebar.classList.remove("open");
 });
 
 sidebarOpen.addEventListener("click", () => {
-  document.body.classList.add("open-sidebar");
+  sidebar.classList.add("open");
 });
 
 // Theme toggle
@@ -155,4 +136,4 @@ historySearch.addEventListener("input", renderChatHistory);
 userInput.addEventListener("input", () => {
   userInput.style.height = "auto";
   userInput.style.height = `${userInput.scrollHeight}px`;
-});
+}); 
