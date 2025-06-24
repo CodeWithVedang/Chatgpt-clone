@@ -46,6 +46,7 @@ body.light {
 
 .app-container {
   display: flex;
+  flex-direction: row;
   width: 100%;
   max-width: 1200px;
   height: 100vh;
@@ -53,10 +54,6 @@ body.light {
   border-radius: 12px;
   overflow: hidden;
   box-shadow: var(--shadow);
-}
-
-body.open-sidebar .app-container {
-  flex-direction: row;
 }
 
 body:not(.open-sidebar) .app-container {
@@ -71,8 +68,7 @@ body:not(.open-sidebar) .app-container {
   flex-direction: column;
   transition: width 0.3s ease, opacity 0.3s ease;
   height: 100%;
-  opacity: 0;
-  visibility: hidden;
+  flex-shrink: 0;
 }
 
 body.open-sidebar .sidebar {
@@ -83,6 +79,8 @@ body.open-sidebar .sidebar {
 
 body:not(.open-sidebar) .sidebar {
   width: 0;
+  opacity: 0;
+  visibility: hidden;
 }
 
 body.light .sidebar {
@@ -168,7 +166,7 @@ body.light #chat-history li {
   display: flex;
   flex-direction: column;
   background-color: var(--background);
-  transition: margin-left 0.3s ease;
+  height: 100%;
 }
 
 body.light .chat-container {
@@ -182,6 +180,7 @@ header {
   padding: 1rem;
   background-color: var(--header);
   border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
 }
 
 body.light header {
@@ -274,6 +273,7 @@ body.light .message.bot {
   background-color: var(--input-bg);
   position: sticky;
   bottom: 0;
+  z-index: 1;
 }
 
 body.light #chat-form {
@@ -338,6 +338,20 @@ body.light #user-input {
 
   .chat-container {
     width: 100%;
+  }
+
+  .sidebar {
+    width: 100%;
+  }
+
+  body.open-sidebar .sidebar {
+    width: 100%;
+  }
+
+  body:not(.open-sidebar) .sidebar {
+    width: 0;
+    opacity: 0;
+    visibility: hidden;
   }
 
   .message {
