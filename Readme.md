@@ -25,7 +25,7 @@ Welcome to **deep-chat**, a modern and responsive AI chatbot interface built usi
 
 ## 🌐 Live Preview
 
-[🔗 Click here for Live Demo](https://chatgpt-clone-theta-gold.vercel.app/)
+[🔗 Click here for Live Demo](https://deep-chat-cwv.vercel.app/)
 
 ---
 
