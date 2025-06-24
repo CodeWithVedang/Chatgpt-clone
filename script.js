@@ -231,6 +231,24 @@ function renderChatHistory() {
     });
     chatHistory.appendChild(li);
   });
+
+  const deleteBtn = document.createElement("button");
+    deleteBtn.className = "delete-chat";
+    deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
+    deleteBtn.title = "Delete chat";
+    deleteBtn.addEventListener("click", (e) => {
+      e.stopPropagation(); // Prevent triggering the chat load
+      chatHistoryData.splice(index, 1); // Remove the session
+      localStorage.setItem("chatHistory", JSON.stringify(chatHistoryData));
+      renderChatHistory(); // Re-render the history
+      li.appendChild(deleteBtn);
+    li.addEventListener("click", () => {
+      session.messages.forEach((msg) => {
+        appendMessage(msg.role, msg.text);
+      });
+    });
+    chatHistory.appendChild(li);
+    });
 }
 
 historySearch.addEventListener("input", renderChatHistory);

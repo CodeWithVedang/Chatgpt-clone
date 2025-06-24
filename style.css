@@ -347,7 +347,30 @@ body.light .message pre code {
   font-style: italic;
 }
 
+.delete-chat {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 4px;
+  transition: color 0.3s, background-color 0.3s;
+}
 
+.delete-chat:hover {
+  color: #ff4444;
+  background-color: rgba(255, 68, 68, 0.1);
+}
+
+body.light .delete-chat {
+  color: var(--light-text-muted);
+}
+
+body.light .delete-chat:hover {
+  color: #ff4444;
+  background-color: rgba(255, 68, 68, 0.1);
+}
 /* Animations */
 @keyframes slideIn {
   from {
