@@ -21,13 +21,19 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         model: "deepseek/deepseek-r1-0528:free",
         messages: [
-          { role: "system", content: "You are a helpful assistant. Always respond in English." },
+          { role: "system", content: "You are a helpful assistant. Always respond in English. Use Markdown formatting (e.g., # for headings, - for bullets, * for emphasis, ` for code) for structured responses." },
           { role: "user", content: message },
         ],
       }),
     });
 
-    const data = await response.json();
+    const text = await response.text(); // Get raw text first to debug
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch (parseError) {
+      return res.status(500).json({ error: `Invalid JSON response: ${text.substring(0, 50)}...` });
+    }
 
     if (!response.ok || data.error) {
       const errorMsg = data.error?.message || "Unknown error from OpenRouter.";

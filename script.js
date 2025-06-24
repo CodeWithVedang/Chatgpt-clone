@@ -51,7 +51,7 @@ newChatButton.addEventListener("click", () => {
   userInput.focus();
 });
 
-// Chat response logic with Markdown formatting
+// Chat response logic with Markdown formatting and error handling
 chatForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   const message = userInput.value.trim();
@@ -73,20 +73,28 @@ chatForm.addEventListener("submit", async (e) => {
       body: JSON.stringify({ message }),
     });
 
-    const data = await response.json();
+    const text = await response.text(); // Get raw text to handle malformed JSON
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch (parseError) {
+      replaceElementText(loadingMsg, `⚠️ Error: Invalid response format: ${text.substring(0, 50)}...`);
+      addToCurrentSession("bot", `⚠️ Error: Invalid response format: ${text.substring(0, 50)}...`);
+      return;
+    }
 
     if (!response.ok || data.error) {
       const errorMsg = data.error || "Unknown error.";
-      replaceElementText(loadingMsg, `⚠️ Error: ${errorMsg}`);
-      addToCurrentSession("bot", `⚠️ Error: ${errorMsg}`);
+      replaceElementText(loadingMsg, `⚠️ Error: ${markdownToHtml(errorMsg)}`);
+      addToCurrentSession("bot", errorMsg);
     } else {
-      const reply = data.reply || "⚠️ Empty response.";
+      const reply = data.reply || "Empty response.";
       const formattedReply = markdownToHtml(reply); // Convert Markdown to HTML
       replaceElementText(loadingMsg, formattedReply);
       addToCurrentSession("bot", reply); // Store raw text in session
     }
   } catch (err) {
-    replaceElementText(loadingMsg, `⚠️ Network Error: ${err.message}`);
+    replaceElementText(loadingMsg, `⚠️ Network Error: ${markdownToHtml(err.message)}`);
     addToCurrentSession("bot", `⚠️ Network Error: ${err.message}`);
   }
 });
@@ -133,7 +141,7 @@ function markdownToHtml(text) {
 
   // 4. Hyphens/Asterisks for Bullets
   html = html.replace(/^(\-|\*) (.*$)/gm, "<ul><li>$2</li></ul>"); // - Item or * Item
-  // Note: This creates individual <ul> per line; for nested lists, a more complex parser is needed
+  // Note: Simplified to individual <ul> per line; nested lists need a full parser
 
   // 5. Greater-Than for Blockquotes
   html = html.replace(/^> (.*$)/gm, "<blockquote>$1</blockquote>"); // > Quoted text
@@ -146,7 +154,7 @@ function markdownToHtml(text) {
     const headers = p1.trim().split("|").map(h => `<th>${h.trim()}</th>`).join("");
     return `<table><tr>${headers}</tr></table>`;
   });
-  // Note: This handles a single row of headers; multi-row tables need further parsing
+  // Note: Handles single-row tables; multi-row tables need further parsing
 
   // 8. Links
   html = html.replace(/\[([^\]]+)\]\((https?:\/\/[^\)]+)\)/g, "<a href='$2' target='_blank'>$1</a>"); // [Text](URL)
