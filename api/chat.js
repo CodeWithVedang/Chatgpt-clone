@@ -13,8 +13,8 @@ export default async function handler(req, res) {
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${process.env.CHAT_API_KEY}`, // Updated to match your Vercel env variable
-        "HTTP-Referer": "https://chatgpt-clone-theta-gold.vercel.app/", // Your domain
+        Authorization: `Bearer ${process.env.CHAT_API_KEY}`,
+        "HTTP-Referer": "https://chatgpt-clone-theta-gold.vercel.app/",
         "X-Title": "ChatGPT Clone",
         "Content-Type": "application/json",
       },

@@ -1,13 +1,13 @@
 // script.js
-const chatForm = document.getElementById("chatForm");
-const chatContainer = document.getElementById("chat-area");
-const userInput = document.getElementById("userInput");
+const chatForm = document.getElementById("chat-form");
+const chatContainer = document.getElementById("chat-container");
+const userInput = document.getElementById("user-input");
 const sidebar = document.getElementById("sidebar");
-const sidebarToggle = document.getElementById("sidebarToggle");
-const sidebarOpen = document.getElementById("sidebarOpen");
-const themeToggle = document.getElementById("themeToggle");
-const historySearch = document.getElementById("historySearch");
-const chatHistory = document.getElementById("chatHistory");
+const sidebarToggle = document.getElementById("sidebar-toggle");
+const sidebarOpen = document.getElementById("sidebar-open");
+const themeToggle = document.getElementById("theme-toggle");
+const historySearch = document.getElementById("history-search");
+const chatHistory = document.getElementById("chat-history");
 
 // Initialize chat history from localStorage
 let history = JSON.parse(localStorage.getItem("chatHistory")) || [];
