@@ -31,8 +31,6 @@ Welcome to **deep-chat**, a modern and responsive AI chatbot interface built usi
 
 ## 📸 Screenshots
 
-> You can upload screenshots to your repo under a folder like `/assets/` and replace the image URLs below accordingly.
-
 ### 💬 Chat Interface (Dark Mode)
 ![Chat UI Dark](assets/screenshot-dark.png)
 
