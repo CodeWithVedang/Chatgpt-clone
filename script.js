@@ -219,20 +219,14 @@ function renderChatHistory() {
     session.messages.some((msg) => msg.text.toLowerCase().includes(searchQuery))
   );
 
-  filteredSessions.forEach((session) => {
+  filteredSessions.forEach((session, index) => {
     const firstMessage = session.messages[0]?.text || "Empty session";
     const li = document.createElement("li");
     li.innerText = firstMessage.slice(0, 50) + (firstMessage.length > 50 ? "..." : "");
     li.title = firstMessage;
-    li.addEventListener("click", () => {
-      session.messages.forEach((msg) => {
-        appendMessage(msg.role, msg.text);
-      });
-    });
-    chatHistory.appendChild(li);
-  });
 
-  const deleteBtn = document.createElement("button");
+    // Create delete button
+    const deleteBtn = document.createElement("button");
     deleteBtn.className = "delete-chat";
     deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
     deleteBtn.title = "Delete chat";
@@ -241,14 +235,22 @@ function renderChatHistory() {
       chatHistoryData.splice(index, 1); // Remove the session
       localStorage.setItem("chatHistory", JSON.stringify(chatHistoryData));
       renderChatHistory(); // Re-render the history
-      li.appendChild(deleteBtn);
+    });
+
+    // Append delete button to li
+    li.appendChild(deleteBtn);
+
+    // Add click event to load chat session
     li.addEventListener("click", () => {
+      chatContainer.innerHTML = ""; // Clear current chat
       session.messages.forEach((msg) => {
         appendMessage(msg.role, msg.text);
       });
     });
+
+    // Append li to chat history
     chatHistory.appendChild(li);
-    });
+  });
 }
 
 historySearch.addEventListener("input", renderChatHistory);
