@@ -73,7 +73,7 @@ chatForm.addEventListener("submit", async (e) => {
       body: JSON.stringify({ message }),
     });
 
-    const data = await response.json(); // Directly parse JSON
+    const data = await response.json();
 
     if (!response.ok || data.error) {
       const errorMsg = data.error || "Unknown error.";
@@ -81,9 +81,9 @@ chatForm.addEventListener("submit", async (e) => {
       addToCurrentSession("bot", errorMsg);
     } else {
       const reply = data.reply || "No response received.";
-      const formattedReply = markdownToHtml(reply); // Convert Markdown to HTML
+      const formattedReply = markdownToHtml(reply);
       replaceElementText(loadingMsg, formattedReply);
-      addToCurrentSession("bot", reply); // Store raw text in session
+      addToCurrentSession("bot", reply);
     }
   } catch (err) {
     replaceElementText(loadingMsg, `⚠️ Network Error: ${err.message}`);
@@ -95,7 +95,7 @@ chatForm.addEventListener("submit", async (e) => {
 function appendMessage(role, text) {
   const div = document.createElement("div");
   div.className = `message ${role}`;
-  div.innerHTML = markdownToHtml(text); // Use innerHTML for formatted content
+  div.innerHTML = markdownToHtml(text);
   chatContainer.appendChild(div);
   chatContainer.scrollTop = chatContainer.scrollHeight;
   return div;
@@ -103,7 +103,7 @@ function appendMessage(role, text) {
 
 function replaceElementText(element, newText) {
   if (element) {
-    element.innerHTML = markdownToHtml(newText); // Use innerHTML for formatted content
+    element.innerHTML = markdownToHtml(newText);
     chatContainer.scrollTop = chatContainer.scrollHeight;
   }
 }
@@ -120,6 +120,9 @@ function markdownToHtml(md) {
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;");
+
+  // Check if the input already contains HTML-like tags
+  const hasHtml = /<[a-z][\s\S]*>/i.test(html);
 
   // Code blocks: ```code```
   html = html.replace(/```([\s\S]*?)```/g, (_, code) => {
@@ -172,9 +175,11 @@ function markdownToHtml(md) {
     return `<ol>${items}</ol>`;
   });
 
-  // Paragraphs: convert two newlines into <p>
-  html = html.replace(/\n{2,}/g, "</p><p>");
-  html = `<p>${html}</p>`;
+  // Only wrap in <p> if no HTML tags are present
+  if (!hasHtml) {
+    html = html.replace(/\n{2,}/g, "</p><p>");
+    html = `<p>${html}</p>`;
+  }
 
   // Cleanup: don't wrap blocks inside <p>
   html = html
