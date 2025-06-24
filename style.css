@@ -100,7 +100,7 @@ body.light .sidebar {
 }
 
 body.light .sidebar-toggle {
-  color: #d1d5db;
+  color: var(--light-text);
 }
 
 .sidebar-content {
@@ -145,8 +145,8 @@ body.light #history-search {
 }
 
 body.light #chat-history li {
-  background-color: var(--light-bot-bg);
-  color: var(--light-text-muted);
+  background-color: var(--light-border);
+  color: var(--light-text);
 }
 
 #chat-history li:hover {
