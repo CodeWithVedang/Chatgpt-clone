@@ -73,28 +73,20 @@ chatForm.addEventListener("submit", async (e) => {
       body: JSON.stringify({ message }),
     });
 
-    const text = await response.text(); // Get raw text to handle malformed JSON
-    let data;
-    try {
-      data = JSON.parse(text);
-    } catch (parseError) {
-      replaceElementText(loadingMsg, `⚠️ Error: Invalid response format: ${text.substring(0, 50)}...`);
-      addToCurrentSession("bot", `⚠️ Error: Invalid response format: ${text.substring(0, 50)}...`);
-      return;
-    }
+    const data = await response.json(); // Directly parse JSON
 
     if (!response.ok || data.error) {
       const errorMsg = data.error || "Unknown error.";
-      replaceElementText(loadingMsg, `⚠️ Error: ${markdownToHtml(errorMsg)}`);
+      replaceElementText(loadingMsg, `⚠️ Error: ${errorMsg}`);
       addToCurrentSession("bot", errorMsg);
     } else {
-      const reply = data.reply || "Empty response.";
+      const reply = data.reply || "No response received.";
       const formattedReply = markdownToHtml(reply); // Convert Markdown to HTML
       replaceElementText(loadingMsg, formattedReply);
       addToCurrentSession("bot", reply); // Store raw text in session
     }
   } catch (err) {
-    replaceElementText(loadingMsg, `⚠️ Network Error: ${markdownToHtml(err.message)}`);
+    replaceElementText(loadingMsg, `⚠️ Network Error: ${err.message}`);
     addToCurrentSession("bot", `⚠️ Network Error: ${err.message}`);
   }
 });
@@ -192,7 +184,6 @@ function markdownToHtml(md) {
 
   return html;
 }
-
 
 // Sidebar toggle
 sidebarToggle.addEventListener("click", () => {
