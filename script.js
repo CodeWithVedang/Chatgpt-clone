@@ -9,12 +9,26 @@ const themeToggle = document.getElementById("theme-toggle");
 const historySearch = document.getElementById("history-search");
 const chatHistory = document.getElementById("chat-history");
 
-// Initialize chat history from localStorage
-let history = JSON.parse(localStorage.getItem("chatHistory")) || [];
+// Initialize current session and load chat history
+let currentSession = [];
+let chatHistoryData = JSON.parse(localStorage.getItem("chatHistory")) || [];
 
 window.addEventListener("load", () => {
   appendMessage("bot", "👋 Hello! How can I help you today?");
   renderChatHistory();
+});
+
+// Save current session to chat history on page unload
+window.addEventListener("beforeunload", () => {
+  if (currentSession.length > 0) {
+    const session = {
+      id: Date.now().toString(),
+      timestamp: new Date().toISOString(),
+      messages: currentSession,
+    };
+    chatHistoryData.push(session);
+    localStorage.setItem("chatHistory", JSON.stringify(chatHistoryData));
+  }
 });
 
 // Chat response logic (as provided)
@@ -24,7 +38,7 @@ chatForm.addEventListener("submit", async (e) => {
   if (!message) return;
 
   appendMessage("user", message);
-  saveToHistory("user", message);
+  addToCurrentSession("user", message);
   userInput.value = "";
   userInput.focus();
 
@@ -44,13 +58,15 @@ chatForm.addEventListener("submit", async (e) => {
     if (!response.ok || data.error) {
       const errorMsg = data.error || "Unknown error.";
       replaceElementText(loadingMsg, `⚠️ Error: ${errorMsg}`);
+      addToCurrentSession("bot", `⚠️ Error: ${errorMsg}`);
     } else {
       const reply = data.reply || "⚠️ Empty response.";
       replaceElementText(loadingMsg, reply);
-      saveToHistory("bot", reply);
+      addToCurrentSession("bot", reply);
     }
   } catch (err) {
     replaceElementText(loadingMsg, `⚠️ Network Error: ${err.message}`);
+    addToCurrentSession("bot", `⚠️ Network Error: ${err.message}`);
   }
 });
 
@@ -70,6 +86,11 @@ function replaceElementText(element, newText) {
   }
 }
 
+// Add message to current session
+function addToCurrentSession(role, text) {
+  currentSession.push({ role, text, timestamp: new Date().toISOString() });
+}
+
 // Sidebar toggle
 sidebarToggle.addEventListener("click", () => {
   sidebar.classList.remove("open");
@@ -87,25 +108,23 @@ themeToggle.addEventListener("click", () => {
     : '<i class="fas fa-moon"></i>';
 });
 
-// Chat history management
-function saveToHistory(role, text) {
-  const timestamp = new Date().toISOString();
-  history.push({ role, text, timestamp });
-  localStorage.setItem("chatHistory", JSON.stringify(history));
-  renderChatHistory();
-}
-
+// Chat history rendering
 function renderChatHistory() {
   chatHistory.innerHTML = "";
-  const filteredHistory = history.filter((item) =>
-    item.text.toLowerCase().includes(historySearch.value.toLowerCase())
+  const searchQuery = historySearch.value.toLowerCase();
+  const filteredSessions = chatHistoryData.filter((session) =>
+    session.messages.some((msg) => msg.text.toLowerCase().includes(searchQuery))
   );
-  filteredHistory.forEach((item, index) => {
+
+  filteredSessions.forEach((session) => {
+    const firstMessage = session.messages[0]?.text || "Empty session";
     const li = document.createElement("li");
-    li.innerText = item.text.slice(0, 50) + (item.text.length > 50 ? "..." : "");
-    li.title = item.text;
+    li.innerText = firstMessage.slice(0, 50) + (firstMessage.length > 50 ? "..." : "");
+    li.title = firstMessage;
     li.addEventListener("click", () => {
-      appendMessage(item.role, item.text);
+      session.messages.forEach((msg) => {
+        appendMessage(msg.role, msg.text);
+      });
     });
     chatHistory.appendChild(li);
   });
