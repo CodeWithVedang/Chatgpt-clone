@@ -15,7 +15,7 @@ let currentSession = [];
 let chatHistoryData = JSON.parse(localStorage.getItem("chatHistory")) || [];
 
 window.addEventListener("load", () => {
-  appendMessage("bot", "👋 Hello! How can I help you today?");
+  appendMessage("bot", "👋 *Hello!* How can I help you today?");
   renderChatHistory();
 });
 
@@ -46,12 +46,12 @@ newChatButton.addEventListener("click", () => {
   }
   currentSession = [];
   chatContainer.innerHTML = "";
-  appendMessage("bot", "👋 Hello! How can I help you today?");
+  appendMessage("bot", "👋 *Hello!* How can I help you today?");
   userInput.value = "";
   userInput.focus();
 });
 
-// Chat response logic with Markdown formatting and error handling
+// Chat response logic with enhanced Markdown formatting
 chatForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   const message = userInput.value.trim();
@@ -62,7 +62,7 @@ chatForm.addEventListener("submit", async (e) => {
   userInput.value = "";
   userInput.focus();
 
-  const loadingMsg = appendMessage("bot", "Typing...");
+  const loadingMsg = appendMessage("bot", "*Typing...*");
 
   try {
     const response = await fetch("/api/chat", {
@@ -73,28 +73,28 @@ chatForm.addEventListener("submit", async (e) => {
       body: JSON.stringify({ message }),
     });
 
-    const text = await response.text(); // Get raw text to handle malformed JSON
+    const text = await response.text();
     let data;
     try {
       data = JSON.parse(text);
     } catch (parseError) {
-      replaceElementText(loadingMsg, `⚠️ Error: Invalid response format: ${text.substring(0, 50)}...`);
+      replaceElementText(loadingMsg, `⚠️ *Error*: Invalid response format: ${text.substring(0, 50)}...`);
       addToCurrentSession("bot", `⚠️ Error: Invalid response format: ${text.substring(0, 50)}...`);
       return;
     }
 
     if (!response.ok || data.error) {
       const errorMsg = data.error || "Unknown error.";
-      replaceElementText(loadingMsg, `⚠️ Error: ${markdownToHtml(errorMsg)}`);
+      replaceElementText(loadingMsg, `⚠️ *Error*: ${markdownToHtml(errorMsg)}`);
       addToCurrentSession("bot", errorMsg);
     } else {
       const reply = data.reply || "Empty response.";
-      const formattedReply = markdownToHtml(reply); // Convert Markdown to HTML
+      const formattedReply = markdownToHtml(reply);
       replaceElementText(loadingMsg, formattedReply);
-      addToCurrentSession("bot", reply); // Store raw text in session
+      addToCurrentSession("bot", reply);
     }
   } catch (err) {
-    replaceElementText(loadingMsg, `⚠️ Network Error: ${markdownToHtml(err.message)}`);
+    replaceElementText(loadingMsg, `⚠️ *Network Error*: ${markdownToHtml(err.message)}`);
     addToCurrentSession("bot", `⚠️ Network Error: ${err.message}`);
   }
 });
@@ -103,7 +103,7 @@ chatForm.addEventListener("submit", async (e) => {
 function appendMessage(role, text) {
   const div = document.createElement("div");
   div.className = `message ${role}`;
-  div.innerHTML = markdownToHtml(text); // Use innerHTML for formatted content
+  div.innerHTML = markdownToHtml(text);
   chatContainer.appendChild(div);
   chatContainer.scrollTop = chatContainer.scrollHeight;
   return div;
@@ -111,7 +111,7 @@ function appendMessage(role, text) {
 
 function replaceElementText(element, newText) {
   if (element) {
-    element.innerHTML = markdownToHtml(newText); // Use innerHTML for formatted content
+    element.innerHTML = markdownToHtml(newText);
     chatContainer.scrollTop = chatContainer.scrollHeight;
   }
 }
@@ -121,9 +121,12 @@ function addToCurrentSession(role, text) {
   currentSession.push({ role, text, timestamp: new Date().toISOString() });
 }
 
-// Markdown to HTML conversion
+// Enhanced Markdown to HTML conversion
 function markdownToHtml(text) {
   let html = text;
+
+  // Escape HTML characters to prevent XSS
+  html = html.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
   // 1. Asterisks/Underscores for Italic/Bold
   html = html.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>"); // **Bold**
@@ -136,28 +139,31 @@ function markdownToHtml(text) {
   html = html.replace(/```([\s\S]*?)```/g, "<pre><code>$1</code></pre>"); // ```code block```
 
   // 3. Pound/Hash for Headings
-  html = html.replace(/^# (.*$)/gm, "<h1>$1</h1>"); // # Heading 1
-  html = html.replace(/^## (.*$)/gm, "<h2>$1</h2>"); // ## Heading 2
+  html = html.replace(/^# (.*$)/gm, "<h1 class='md-heading'>$1</h1>"); // # Heading 1
+  html = html.replace(/^## (.*$)/gm, "<h2 class='md-heading'>$1</h2>"); // ## Heading 2
 
-  // 4. Hyphens/Asterisks for Bullets
-  html = html.replace(/^(\-|\*) (.*$)/gm, "<ul><li>$2</li></ul>"); // - Item or * Item
-  // Note: Simplified to individual <ul> per line; nested lists need a full parser
+  // 4. Hyphens/Asterisks for Bullets (handle nested lists)
+  html = html.replace(/^(\s*[-*] .*)$/gm, (match, p1) => {
+    const depth = match.match(/^\s*/)[0].length / 2; // Count leading spaces for nesting
+    const content = match.trim().replace(/^- /, "");
+    return "<ul style='margin-left: " + (depth * 20) + "px;'><li>" + content + "</li></ul>";
+  });
 
   // 5. Greater-Than for Blockquotes
-  html = html.replace(/^> (.*$)/gm, "<blockquote>$1</blockquote>"); // > Quoted text
+  html = html.replace(/^> (.*$)/gm, "<blockquote class='md-quote'>$1</blockquote>"); // > Quoted text
 
   // 6. Tildes for Strikethrough
   html = html.replace(/~~(.*?)~~/g, "<del>$1</del>"); // ~~Strikethrough~~
 
   // 7. Vertical Bars for Tables
   html = html.replace(/^\|(.+)\|\s*$/gm, (match, p1) => {
-    const headers = p1.trim().split("|").map(h => `<th>${h.trim()}</th>`).join("");
-    return `<table><tr>${headers}</tr></table>`;
+    const rows = p1.trim().split("|").map(cell => `<td>${cell.trim()}</td>`).join("");
+    return `<table class='md-table'><tr>${rows}</tr></table>`;
   });
-  // Note: Handles single-row tables; multi-row tables need further parsing
+  // Note: Simplified table parsing; multi-row tables need a full parser
 
   // 8. Links
-  html = html.replace(/\[([^\]]+)\]\((https?:\/\/[^\)]+)\)/g, "<a href='$2' target='_blank'>$1</a>"); // [Text](URL)
+  html = html.replace(/\[([^\]]+)\]\((https?:\/\/[^\)]+)\)/g, "<a href='$2' target='_blank' class='md-link'>$1</a>"); // [Text](URL)
 
   return html;
 }
