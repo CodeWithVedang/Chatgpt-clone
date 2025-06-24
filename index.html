@@ -2,18 +2,53 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ChatGPT Clone</title>
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
 </head>
 <body>
-  <div class="container">
-    <header>ChatGPT</header>
-    <main id="chat-container"></main>
-    <form id="chat-form">
-      <textarea id="user-input" placeholder="Send a message..." required></textarea>
-      <button type="submit">➤</button>
-    </form>
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <h2>Chat History</h2>
+        <button class="sidebar-toggle" id="sidebar-toggle" aria-label="Toggle sidebar">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="sidebar-content">
+        <input type="text" id="history-search" placeholder="Search chats..." aria-label="Search chat history" />
+        <ul id="chat-history" aria-live="polite"></ul>
+      </div>
+    </aside>
+
+    <!-- Main Chat Area -->
+    <main class="chat-container">
+      <header>
+        <button class="sidebar-open" id="sidebar-open" aria-label="Open sidebar">
+          <i class="fas fa-bars"></i>
+        </button>
+        <h1>ChatGPT Clone</h1>
+        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle light/dark mode">
+          <i class="fas fa-moon"></i>
+        </button>
+      </header>
+      <div id="chat-container" role="log" aria-live="polite"></div>
+      <form id="chat-form" role="form" aria-label="Chat input form">
+        <textarea
+          id="user-input"
+          placeholder="Type your message..."
+          aria-label="Type your message"
+          rows="1"
+          autocomplete="off"
+        ></textarea>
+        <button type="submit" aria-label="Send message">
+          <i class="fas fa-paper-plane"></i>
+        </button>
+      </form>
+    </main>
   </div>
   <script src="script.js"></script>
 </body>
