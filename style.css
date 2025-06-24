@@ -55,23 +55,34 @@ body.light {
   box-shadow: var(--shadow);
 }
 
+body.open-sidebar .app-container {
+  flex-direction: row;
+}
+
+body:not(.open-sidebar) .app-container {
+  flex-direction: column;
+}
+
 /* Sidebar */
 .sidebar {
   width: 250px;
   background-color: var(--header);
   display: flex;
   flex-direction: column;
-  transition: transform 0.3s ease;
-  position: absolute;
-  top: 0;
-  left: 0;
+  transition: width 0.3s ease, opacity 0.3s ease;
   height: 100%;
-  transform: translateX(-100%);
-  z-index: 10;
+  opacity: 0;
+  visibility: hidden;
 }
 
-.sidebar.open {
-  transform: translateX(0);
+body.open-sidebar .sidebar {
+  opacity: 1;
+  visibility: visible;
+  width: 250px;
+}
+
+body:not(.open-sidebar) .sidebar {
+  width: 0;
 }
 
 body.light .sidebar {
@@ -157,6 +168,7 @@ body.light #chat-history li {
   display: flex;
   flex-direction: column;
   background-color: var(--background);
+  transition: margin-left 0.3s ease;
 }
 
 body.light .chat-container {
@@ -223,14 +235,6 @@ body.light .new-chat {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-}
-
-body.open-sidebar .chat-container {
-  margin-left: 250px;
-}
-
-body.light.open-sidebar .chat-container {
-  margin-left: 250px;
 }
 
 .message {
@@ -334,7 +338,6 @@ body.light #user-input {
 
   .chat-container {
     width: 100%;
-    margin-left: 0 !important;
   }
 
   .message {

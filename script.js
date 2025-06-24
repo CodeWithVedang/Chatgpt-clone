@@ -112,12 +112,10 @@ function saveCurrentSession() {
 
 // Sidebar toggle
 sidebarToggle.addEventListener("click", () => {
-  sidebar.classList.remove("open");
   document.body.classList.remove("open-sidebar");
 });
 
 sidebarOpen.addEventListener("click", () => {
-  sidebar.classList.add("open");
   document.body.classList.add("open-sidebar");
 });
 
