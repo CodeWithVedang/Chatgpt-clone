@@ -60,7 +60,7 @@ Welcome to **deep-chat**, a modern and responsive AI chatbot interface built usi
    ```bash
    git clone https://github.com/CodeWithVedang/deep-chat.git
    cd deep-chat
-````
+  
 
 2. **Set up your OpenRouter API key**
 
