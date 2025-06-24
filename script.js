@@ -1,4 +1,4 @@
-const API_KEY = "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";
+// script.js
 const chatForm = document.getElementById("chat-form");
 const chatContainer = document.getElementById("chat-container");
 const userInput = document.getElementById("user-input");
@@ -19,30 +19,21 @@ chatForm.addEventListener("submit", async (e) => {
   const loadingMsg = appendMessage("bot", "Typing...");
 
   try {
-    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+    const response = await fetch("/api/chat", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${API_KEY}`,
-        "HTTP-Referer": "https://yourdomain.com", // Optional
-        "X-Title": "ChatGPT Clone",
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        model: "deepseek/deepseek-r1-0528:free",
-        messages: [
-          { role: "system", content: "You are a helpful assistant. Always respond in English." },
-          { role: "user", content: message }
-        ]
-      })
+      body: JSON.stringify({ message }),
     });
 
     const data = await response.json();
 
     if (!response.ok || data.error) {
-      const errorMsg = data.error?.message || "Unknown error from OpenRouter.";
+      const errorMsg = data.error || "Unknown error.";
       replaceElementText(loadingMsg, `⚠️ Error: ${errorMsg}`);
     } else {
-      const reply = data.choices?.[0]?.message?.content?.trim() || "⚠️ Empty response.";
+      const reply = data.reply || "⚠️ Empty response.";
       replaceElementText(loadingMsg, reply);
     }
   } catch (err) {
