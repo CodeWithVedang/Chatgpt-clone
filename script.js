@@ -51,7 +51,7 @@ newChatButton.addEventListener("click", () => {
   userInput.focus();
 });
 
-// Chat response logic (as provided)
+// Chat response logic with Markdown formatting
 chatForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   const message = userInput.value.trim();
@@ -81,8 +81,9 @@ chatForm.addEventListener("submit", async (e) => {
       addToCurrentSession("bot", `⚠️ Error: ${errorMsg}`);
     } else {
       const reply = data.reply || "⚠️ Empty response.";
-      replaceElementText(loadingMsg, reply);
-      addToCurrentSession("bot", reply);
+      const formattedReply = markdownToHtml(reply); // Convert Markdown to HTML
+      replaceElementText(loadingMsg, formattedReply);
+      addToCurrentSession("bot", reply); // Store raw text in session
     }
   } catch (err) {
     replaceElementText(loadingMsg, `⚠️ Network Error: ${err.message}`);
@@ -90,10 +91,11 @@ chatForm.addEventListener("submit", async (e) => {
   }
 });
 
+// Append message with HTML support
 function appendMessage(role, text) {
   const div = document.createElement("div");
   div.className = `message ${role}`;
-  div.innerText = text;
+  div.innerHTML = markdownToHtml(text); // Use innerHTML for formatted content
   chatContainer.appendChild(div);
   chatContainer.scrollTop = chatContainer.scrollHeight;
   return div;
@@ -101,14 +103,55 @@ function appendMessage(role, text) {
 
 function replaceElementText(element, newText) {
   if (element) {
-    element.innerText = newText;
+    element.innerHTML = markdownToHtml(newText); // Use innerHTML for formatted content
     chatContainer.scrollTop = chatContainer.scrollHeight;
   }
 }
 
-// Add message to current session
+// Add message to current session (store raw text)
 function addToCurrentSession(role, text) {
   currentSession.push({ role, text, timestamp: new Date().toISOString() });
+}
+
+// Markdown to HTML conversion
+function markdownToHtml(text) {
+  let html = text;
+
+  // 1. Asterisks/Underscores for Italic/Bold
+  html = html.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>"); // **Bold**
+  html = html.replace(/\*(.*?)\*/g, "<em>$1</em>"); // *Italic*
+  html = html.replace(/_(.*?)_/g, "<em>$1</em>"); // _Italic_
+  html = html.replace(/\*\*\*(.*?)\*\*\*/g, "<strong><em>$1</em></strong>"); // ***Bold Italic***
+
+  // 2. Backticks for Code
+  html = html.replace(/`([^`]+)`/g, "<code>$1</code>"); // `inline code`
+  html = html.replace(/```([\s\S]*?)```/g, "<pre><code>$1</code></pre>"); // ```code block```
+
+  // 3. Pound/Hash for Headings
+  html = html.replace(/^# (.*$)/gm, "<h1>$1</h1>"); // # Heading 1
+  html = html.replace(/^## (.*$)/gm, "<h2>$1</h2>"); // ## Heading 2
+
+  // 4. Hyphens/Asterisks for Bullets
+  html = html.replace(/^(\-|\*) (.*$)/gm, "<ul><li>$2</li></ul>"); // - Item or * Item
+  // Note: This creates individual <ul> per line; for nested lists, a more complex parser is needed
+
+  // 5. Greater-Than for Blockquotes
+  html = html.replace(/^> (.*$)/gm, "<blockquote>$1</blockquote>"); // > Quoted text
+
+  // 6. Tildes for Strikethrough
+  html = html.replace(/~~(.*?)~~/g, "<del>$1</del>"); // ~~Strikethrough~~
+
+  // 7. Vertical Bars for Tables
+  html = html.replace(/^\|(.+)\|\s*$/gm, (match, p1) => {
+    const headers = p1.trim().split("|").map(h => `<th>${h.trim()}</th>`).join("");
+    return `<table><tr>${headers}</tr></table>`;
+  });
+  // Note: This handles a single row of headers; multi-row tables need further parsing
+
+  // 8. Links
+  html = html.replace(/\[([^\]]+)\]\((https?:\/\/[^\)]+)\)/g, "<a href='$2' target='_blank'>$1</a>"); // [Text](URL)
+
+  return html;
 }
 
 // Sidebar toggle
