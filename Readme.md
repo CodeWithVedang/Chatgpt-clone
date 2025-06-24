@@ -1,10 +1,3 @@
-Here’s a complete and attractive `README.md` file for your GitHub project [CodeWithVedang](https://github.com/CodeWithVedang/) — based on your uploaded files and UI features.
-
-You can add actual screenshots in the placeholder areas after uploading images to the repo (e.g., `/assets/screenshot1.png`).
-
----
-
-````markdown
 # 🤖 deep-chat – A ChatGPT Clone using DeepSeek API
 
 Welcome to **deep-chat**, a modern and responsive AI chatbot interface built using **HTML**, **CSS**, and **JavaScript**, powered by the **DeepSeek API** via OpenRouter. This lightweight and clean interface replicates a ChatGPT-style experience with full support for markdown, code rendering, session history, dark/light theme, and more.
