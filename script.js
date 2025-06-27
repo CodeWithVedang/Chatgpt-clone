@@ -115,6 +115,11 @@ function addToCurrentSession(role, text) {
 
 // Markdown to HTML conversion
 function markdownToHtml(md) {
+  // Handle undefined or null input
+  if (!md || typeof md !== "string") {
+    return "";
+  }
+
   // Escape HTML to prevent XSS
   let html = md
     .replace(/&/g, "&amp;")
@@ -175,8 +180,8 @@ function markdownToHtml(md) {
     return `<ol>${items}</ol>`;
   });
 
-  // Only wrap in <p> if no HTML tags are present
-  if (!hasHtml) {
+  // Only wrap in <p> if no HTML tags are present and not already wrapped
+  if (!hasHtml && !html.startsWith("<p>")) {
     html = html.replace(/\n{2,}/g, "</p><p>");
     html = `<p>${html}</p>`;
   }
@@ -185,11 +190,11 @@ function markdownToHtml(md) {
   html = html
     .replace(/<p>(<(ul|ol|pre|blockquote|h\d)[\s\S]*?<\/\2>)<\/p>/g, "$1")
     .replace(/<\/(ul|ol|pre|blockquote)><p>/g, "</$1>")
-    .replace(/<\/p><(ul|ol|pre|blockquote|h\d)>/g, "<$1>");
+    .replace(/<\/p><(ul|ol|pre|blockquote|h\d)>/g, "<$1>")
+    .replace(/^<p>\s*<\/p>$/gm, ""); // Remove empty <p> tags
 
   return html;
 }
-
 // Sidebar toggle
 sidebarToggle.addEventListener("click", () => {
   sidebar.classList.remove("open");
