@@ -52,6 +52,7 @@ newChatButton.addEventListener("click", () => {
 });
 
 // Chat response logic with Markdown formatting and error handling
+// Chat response logic with Markdown formatting and error handling
 chatForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   const message = userInput.value.trim();
@@ -81,8 +82,12 @@ chatForm.addEventListener("submit", async (e) => {
       addToCurrentSession("bot", errorMsg);
     } else {
       const reply = data.reply || "No response received.";
-      const formattedReply = markdownToHtml(reply);
-      replaceElementText(loadingMsg, formattedReply);
+      // Update the loading message with the raw reply
+      replaceElementText(loadingMsg, reply);
+      // Reapply Markdown styling to ensure proper formatting
+      setTimeout(() => {
+        replaceElementText(loadingMsg, reply);
+      }, 0); // Delay to ensure DOM update
       addToCurrentSession("bot", reply);
     }
   } catch (err) {
